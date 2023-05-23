@@ -6,7 +6,11 @@ export default function Page() {
 
   const [payload, setPayload] = React.useState({
     email: '',
-    password: ''
+    password: '',
+    phoneNumber: '',
+    city: '',
+    zip: '',
+    address: '',
   })
 
   const onChange = (e, key) => {
@@ -19,6 +23,29 @@ export default function Page() {
   const onSubmit = () => {
     console.log('submit!')
     console.log('payload', payload)
+
+    axios({
+      method: 'POST',
+      url: url,
+      headers: { "Content-Type": "application/json" },
+      data: JSON.stringify(payload)
+    })
+    .then(res => {
+      console.log('res', res.data)
+
+      Toast.fire({
+        icon: 'success',
+        title: `akun berhasil di buat`
+      })
+      router.replace('/')
+    })
+    .catch(err => {
+      console.log('error', err.message)
+      Toast.fire({
+        icon: 'error',
+        title: 'internal error'
+      })
+    })
   }
 
   return (

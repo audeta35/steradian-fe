@@ -1,8 +1,30 @@
+"use client"
+import { Toast } from "@/component/Toast";
 import { menuDashboard } from "@/utils/menu";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const router = useRouter()
+  const [auth, setAuth] = useState({})
+
+  useEffect(() => {
+    setAuth(
+      JSON.parse(sessionStorage.getItem('auth'))
+    )
+  }, [sessionStorage.getItem('auth')])
+
+  const onLogout = () => {
+    sessionStorage.clear()
+    setAuth({})
+    Toast.fire({
+      icon: 'success',
+      title: 'Berhasil Logout'
+    })
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -27,8 +49,9 @@ export default function Home() {
 
       <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
         {menuDashboard?.map((item, index) => (
-          <Link
-            href={`${item.href}`}
+          <button
+            key={index}
+            onClick={() => router.push(item.href)}
             className="group mx-5 rounded-lg border border-transparent bg-blue-400 text-white dark:bg-gray-950 px-10 py-10 my-5 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:text-[gray] hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           >
             <h2 className={`mb-3 text-2xl font-normal`}>
@@ -40,8 +63,25 @@ export default function Home() {
             <p className={`m-0 max-w-[30ch] text-sm opacity-50 font-thin`}>
               {item.desc}
             </p>
-          </Link>
+          </button>
         ))}
+
+        {auth && (
+          <button
+            onClick={() => onLogout()}
+            className="group mx-5 rounded-lg border border-transparent bg-blue-400 text-white dark:bg-gray-950 px-10 py-10 my-5 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:text-[gray] hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          >
+            <h2 className={`mb-3 text-2xl font-normal`}>
+              Logout{" "}
+              <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                {/* -&gt; */}
+              </span>
+            </h2>
+            <p className={`m-0 max-w-[30ch] text-sm opacity-50 font-thin`}>
+              Logout user / admin
+            </p>
+          </button>
+        )}
       </div>
     </main>
   );

@@ -1,4 +1,6 @@
 "use client"
+import { Toast } from "@/component/Toast"
+import axios from "axios"
 import Link from "next/link"
 import React from "react"
 
@@ -19,6 +21,32 @@ export default function Page() {
   const onSubmit = () => {
     console.log('submit!')
     console.log('payload', payload)
+    console.log("payload stringify", JSON.stringify(payload));
+
+    let url = `${env.API_HOST}/admin/register`;
+
+    axios({
+      method: 'POST',
+      url: url,
+      headers: { "Content-Type": "application/json" },
+      data: JSON.stringify(payload)
+    })
+    .then(res => {
+      console.log('res', res.data)
+
+      Toast.fire({
+        icon: 'success',
+        title: `akun telah di buat, silahkan login`
+      })
+      router.push('/admin/login')
+    })
+    .catch(err => {
+      console.log('error', err.message)
+      Toast.fire({
+        icon: 'error',
+        title: 'Internal error'
+      })
+    })
   }
 
   return (
