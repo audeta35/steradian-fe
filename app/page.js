@@ -1,6 +1,7 @@
 "use client"
 import { Toast } from "@/component/Toast";
 import { menuDashboard } from "@/utils/menu";
+import { CircularProgress, LinearProgress } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,11 +10,12 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const router = useRouter()
   const [auth, setAuth] = useState({})
-
+  const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     setAuth(
       JSON.parse(sessionStorage.getItem('auth'))
     )
+    setIsLoading(false)
   }, [sessionStorage.getItem('auth')])
 
   const onLogout = () => {
@@ -35,6 +37,7 @@ export default function Home() {
       </div>
 
       <div className="">
+
         <Image
           className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70]"
           src="/car.png"
@@ -46,12 +49,15 @@ export default function Home() {
       <div className="">
         <h1 className="text-4xl md:-mt-16 font-bold">RENT CAR APP</h1>
       </div>
+      {isLoading &&
+        <CircularProgress />
+      }
 
       <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
         {menuDashboard?.map((item, index) => (
           <button
             key={index}
-            onClick={() => router.push(item.href)}
+            onClick={() => { setIsLoading(true); router.push(item.href) }}
             className="group mx-5 rounded-lg border border-transparent bg-blue-400 text-white dark:bg-gray-950 px-10 py-10 my-5 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:text-[gray] hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           >
             <h2 className={`mb-3 text-2xl font-normal`}>

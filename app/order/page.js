@@ -3,7 +3,7 @@
 "use client"
 import { Toast } from "@/component/Toast";
 import { env } from "@/next.config";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -61,7 +61,7 @@ const dataInput = [
 ]
 
 const dummy = [
-  { ID: "2", PickUpLoc: "Tanggerang", DropOffLoc: "BSD", PickupDate: "2002-19-04", DropOffDate: "2002-20-04", PickUpTime: "19:00", CardId: "1", UserId: "1", AdminId: "1" }
+  { ID: "2", PickUpLoc: "Tanggerang", DropOffLoc: "BSD", PickupDate: "04/02/2002", DropOffDate: "2002-20-04", PickUpTime: "19:00", CardId: "1", UserId: "1", AdminId: "1" }
 ]
 
 
@@ -72,11 +72,20 @@ export default function Page() {
   const [dialogTitle, setDialogTitle] = useState('');
   const [payload, setPayload] = useState({})
   const [crud, setCrud] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   const router = useRouter();
 
   useEffect(() => {
+    if (sessionStorage.getItem('auth')) {
+      router.push('/')
+      Toast.fire({
+        icon: 'info',
+        title: 'Login terlebih dahulu'
+      })
+    }
     fetchData()
+    setIsLoading(false)
   }, [data])
 
   const fetchData = () => {
@@ -163,6 +172,9 @@ export default function Page() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
+      {isLoading &&
+        <LinearProgress />
+      }
       <TableContainer className="bg-blue-400">
         <Button className="bg-blue-900 m-2" variant="contained" onClick={() => {
           router.replace('/')
@@ -202,7 +214,7 @@ export default function Page() {
                 <TableCell className="text-gray-400 bg-white font-semibold">
                   <Button variant="contained" className="bg-yellow-400 m-1" onClick={() => {
                     handleClickOpen('edit')
-                    setCrud('edit')
+                    setCrud(`edit/${item.ID}`)
                     setPayload({
                       orderId: item.ID,
                       pickUpLoc: item.PickUpLoc,
@@ -241,7 +253,7 @@ export default function Page() {
                   id="name"
                   placeholder={item.label}
                   label={payload[item.name] && item.label}
-                  value={item.type === 'date' ? new Date(payload[item.name]) : payload[item.name]}
+                  value={item.type === 'date' ? Date(payload[item.name]) : payload[item.name]}
                   onChange={(e) => onChange(e, item.name)}
                   type={item.type}
                   fullWidth

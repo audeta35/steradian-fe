@@ -1,8 +1,10 @@
 "use client"
+import { LinearProgress } from "@mui/material"
 import Link from "next/link"
 import React from "react"
 
 export default function Page() {
+  const [isLoading, setIsLoading] = React.useState(true)
 
   const [payload, setPayload] = React.useState({
     email: '',
@@ -12,6 +14,9 @@ export default function Page() {
     zip: '',
     address: '',
   })
+  React.useEffect(() => {
+    setIsLoading(false)
+  }, [])
 
   const onChange = (e, key) => {
     setPayload({
@@ -23,7 +28,8 @@ export default function Page() {
   const onSubmit = () => {
     console.log('submit!')
     console.log('payload', payload)
-    let url = `${env.API_HOST}/user/login`;
+    let url = `${env.API_HOST}/user/register`;
+    setIsLoading(true)
 
     axios({
       method: 'POST',
@@ -31,28 +37,32 @@ export default function Page() {
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify(payload)
     })
-    .then(res => {
-      console.log('res', res.data)
+      .then(res => {
+        console.log('res', res.data)
 
-      Toast.fire({
-        icon: 'success',
-        title: `akun berhasil di buat`
+        Toast.fire({
+          icon: 'success',
+          title: `akun berhasil di buat`
+        })
+        setIsLoading(false)
+        router.replace('/')
       })
-      router.replace('/')
-    })
-    .catch(err => {
-      console.log('error', err.message)
-      Toast.fire({
-        icon: 'error',
-        title: 'internal error'
+      .catch(err => {
+        console.log('error', err.message)
+        Toast.fire({
+          icon: 'error',
+          title: 'internal error'
+        })
+        setIsLoading(false)
       })
-    })
   }
 
   return (
     <section className="h-screen flex flex-col md:flex-row justify-center space-y-10 md:space-y-0 md:space-x-16 items-center my-2 mx-5 md:mx-0 md:my-0">
       <div className="md:w-1/3 max-w-sm">
-        <img
+        {isLoading &&
+          <LinearProgress />
+        } <img
           src="/car.png"
           alt="Sample image" />
         <div className="">

@@ -3,7 +3,7 @@
 "use client"
 import { Toast } from "@/component/Toast";
 import { env } from "@/next.config";
-import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Rating, Slider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, LinearProgress, Rating, Slider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -72,9 +72,6 @@ const dummy = [
   { ID: "1", Name: "Agya", CarType: "SUV", Rating: "5", Fuel: "30", Image: "suv.png", HourRate: "24", DayRate: "2", MonthRate: "1" }
 ]
 
-
-
-
 export default function Page() {
 
   const [data, setData] = useState([])
@@ -83,10 +80,19 @@ export default function Page() {
   const [payload, setPayload] = useState({})
   const [crud, setCrud] = useState('')
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true)
 
 
   useEffect(() => {
+    if (JSON.parse(sessionStorage.getItem('auth'))?.role !== 'admin') {
+      router.push('/')
+      Toast.fire({
+        icon: 'info',
+        title: 'Anda bukan admin'
+      })
+    }
     fetchData()
+    setIsLoading(false)
   }, [data])
 
   const fetchData = () => {
@@ -174,6 +180,9 @@ export default function Page() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
+      {isLoading &&
+        <LinearProgress />
+      }
       <TableContainer className="bg-blue-400">
         <Button className="bg-blue-900 m-2" variant="contained" onClick={() => {
           router.replace('/')
@@ -218,7 +227,7 @@ export default function Page() {
 
                   <Button variant="contained" className="bg-yellow-400 m-1" onClick={() => {
                     handleClickOpen('edit')
-                    setCrud('edit')
+                    setCrud(`edit/${item.ID}`)
                     setPayload({
                       carId: item.ID,
                       name: item.Name,
