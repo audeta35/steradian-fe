@@ -56,7 +56,7 @@ export default function Page() {
       router.replace('/')
     })
     .catch(err => {
-      console.log('error', err.message)
+      console.log('error', err)
       Toast.fire({
         icon: 'error',
         title: 'username atau password salah'

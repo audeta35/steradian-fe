@@ -1,5 +1,6 @@
 "use client"
 import { Toast } from "@/component/Toast"
+import { env } from "@/next.config"
 import axios from "axios"
 import Link from "next/link"
 import React from "react"
