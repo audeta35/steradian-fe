@@ -1,13 +1,69 @@
 
 
 "use client"
+import { Toast } from "@/component/Toast";
 import { env } from "@/next.config";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const tableHead = ['OrderID', 'Pickup Loc', 'Dropoff Loc', 'Pickup Date', 'Dropoff Date', 'Pickup Time', 'CarID', 'UserID', 'AdminID', 'Option']
-const textFieldData = ['pickUpLoc', 'dropOffLoc', 'pickUpDate', 'dropOffDate', 'pickUpTime', 'carId', 'userId', 'adminId']
+const dataInput = [
+  {
+    name: 'pickUpLoc',
+    type: 'text',
+    grid: 6,
+    label: 'Pick Up Location',
+  },
+  {
+    name: 'dropOffLoc',
+    type: 'text',
+    grid: 6,
+    label: 'Drop Off Location',
+  },
+  {
+    name: 'pickUpDate',
+    type: 'date',
+    grid: 6,
+    label: 'Pick Up Date',
+  },
+  {
+    name: 'dropOffDate',
+    type: 'date',
+    grid: 6,
+    label: 'Drop Off Date',
+  },
+  {
+    name: 'pickUpTime',
+    type: 'text',
+    grid: 6,
+    label: 'Pick Up Time',
+  },
+  {
+    name: 'carId',
+    type: 'text',
+    grid: 6,
+    label: 'Card ID',
+  },
+  {
+    name: 'userId',
+    type: 'text',
+    grid: 6,
+    label: 'User ID',
+  },
+  {
+    name: 'adminId',
+    type: 'text',
+    grid: 6,
+    label: 'Admin ID',
+  }
+]
+
+const dummy = [
+  { ID: "2", PickUpLoc: "Tanggerang", DropOffLoc: "BSD", PickupDate: "2002-19-04", DropOffDate: "2002-20-04", PickUpTime: "19:00", CardId: "1", UserId: "1", AdminId: "1" }
+]
+
 
 export default function Page() {
 
@@ -17,6 +73,7 @@ export default function Page() {
   const [payload, setPayload] = useState({})
   const [crud, setCrud] = useState('')
 
+  const router = useRouter();
 
   useEffect(() => {
     fetchData()
@@ -56,8 +113,9 @@ export default function Page() {
   }
 
   const onSubmit = () => {
-    console.log('submit!')
+    console.log(`${crud}!`)
     console.log('payload', payload)
+    console.log('payload', JSON.stringify(payload))
     let url = `${env.API_HOST}/orders/${crud}`;
 
     axios({
@@ -71,7 +129,7 @@ export default function Page() {
 
         Toast.fire({
           icon: 'success',
-          title: `akun berhasil di buat`
+          title: `${crud} success`
         })
         router.replace('/')
       })
@@ -86,10 +144,32 @@ export default function Page() {
       })
   }
 
+  const deleteData = (id) => {
+    console.log('delete!')
+    console.log('payload', payload)
+    console.log('payload', JSON.stringify(payload))
+    let url = `${env.API_HOST}/orders/delete/${id}`;
+
+    axios.delete(url)
+      .then(res => {
+        console.log(res)
+        fetchData()
+      })
+      .catch(err => {
+        console.log('error', err.message)
+        fetchData()
+      })
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
       <TableContainer className="bg-blue-400">
-        <Button className="w-full" variant="contained" onClick={() => {
+        <Button className="bg-blue-900 m-2" variant="contained" onClick={() => {
+          router.replace('/')
+        }}>
+          back
+        </Button>
+        <Button className="float-right bg-blue-900 m-2" variant="contained" onClick={() => {
           handleClickOpen('Add')
           setPayload({})
           setCrud('add')
@@ -108,22 +188,19 @@ export default function Page() {
           </TableHead>
 
           <TableBody>
-            {data.map((item, index) => (
+            {dummy.map((item, index) => (
               <TableRow key={index}>
-                <TableCell>{item.ID}</TableCell>
-                <TableCell>{item.PickUpLoc}</TableCell>
-                <TableCell>{item.DropOffLoc}</TableCell>
-                <TableCell>{item.PickUpDate}</TableCell>
-                <TableCell>{item.DropOffDate}</TableCell>
-                <TableCell>{item.PickUpTime}</TableCell>
-                <TableCell>{item.CarId}</TableCell>
-                <TableCell>{item.UserId}</TableCell>
-                <TableCell>{item.AdminId}</TableCell>
-                <TableCell>
-                  <Button variant="contained">
-                    Add
-                  </Button>
-                  <Button variant="contained" onClick={() => {
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.ID}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.PickUpLoc}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.DropOffLoc}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.PickUpDate}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.DropOffDate}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.PickUpTime}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.CarId}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.UserId}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">{item.AdminId}</TableCell>
+                <TableCell className="text-gray-400 bg-white font-semibold">
+                  <Button variant="contained" className="bg-yellow-400 m-1" onClick={() => {
                     handleClickOpen('edit')
                     setCrud('edit')
                     setPayload({
@@ -139,8 +216,8 @@ export default function Page() {
                   }}>
                     Edit
                   </Button>
-                  <Button variant="contained" onClick={() => {
-
+                  <Button variant="contained" className="bg-red-400 m-1" onClick={() => {
+                    deleteData(item.ID)
                   }}>
                     Del
                   </Button>
@@ -151,23 +228,28 @@ export default function Page() {
         </Table>
       </TableContainer>
 
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
-          {textFieldData.map((item, index) => (
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label={item}
-              value={payload[item]}
-              onChange={(e) => onChange(e, item)}
-              type="text"
-              fullWidth
-              variant="standard"
-            />
-          ))}
-
+          <Grid container spacing={0}>
+            {dataInput.map((item, index) => (
+              <Grid md={item.grid} className="p-1">
+                <TextField
+                  autoFocus
+                  key={index}
+                  margin="dense"
+                  id="name"
+                  placeholder={item.label}
+                  label={payload[item.name] && item.label}
+                  value={item.type === 'date' ? new Date(payload[item.name]) : payload[item.name]}
+                  onChange={(e) => onChange(e, item.name)}
+                  type={item.type}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+            ))}
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
