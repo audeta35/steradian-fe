@@ -172,7 +172,7 @@ export default function Page() {
 
         setPayload({
           ...payload,
-          pickUpTime: "",
+          pickUpDate: "",
         });
       } else {
         setPayload({
